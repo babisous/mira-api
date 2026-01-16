@@ -179,6 +179,38 @@ class ArtworkService {
   }
 
   /**
+   * Recherche des œuvres par titre ou nom d'artiste
+   * @param {string} query - Terme de recherche
+   * @param {number} limit - Nombre maximum de résultats
+   * @returns {Promise<object[]>}
+   */
+  async search(query, limit = 10) {
+    if (!query?.trim()) return [];
+
+    return prisma.artwork.findMany({
+      where: {
+        OR: [
+          { title: { contains: query, mode: "insensitive" } },
+          { user: { name: { contains: query, mode: "insensitive" } } },
+        ],
+        anchor: { isNot: null },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+        anchor: true,
+      },
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  /**
    * Supprime une œuvre d'art
    * @param {string} id - ID de l'œuvre
    * @param {string} userId - ID de l'utilisateur (pour vérifier la propriété)

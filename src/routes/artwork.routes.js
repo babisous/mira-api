@@ -12,6 +12,13 @@ const router = express.Router();
 router.get("/", artworkController.getAllArtworks);
 
 /**
+ * @route   GET /api/artworks/search
+ * @desc    Recherche des œuvres par titre ou nom d'artiste
+ * @access  Public
+ */
+router.get("/search", artworkController.searchArtworks);
+
+/**
  * @route   GET /api/artworks/:id
  * @desc    Récupère une œuvre par son ID
  * @access  Public

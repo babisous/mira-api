@@ -1,6 +1,37 @@
 import artworkService from "../services/artwork.service.js";
 
 /**
+ * Recherche des œuvres par titre ou nom d'artiste
+ * GET /api/artworks/search?q=...
+ */
+export const searchArtworks = async (req, res) => {
+  try {
+    const { q, limit } = req.query;
+
+    if (!q?.trim()) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+      });
+    }
+
+    const artworks = await artworkService.search(q, parseInt(limit) || 10);
+
+    return res.status(200).json({
+      success: true,
+      data: artworks,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la recherche d'œuvres:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: "Erreur lors de la recherche d'œuvres",
+    });
+  }
+};
+
+/**
  * Crée une nouvelle œuvre d'art
  * POST /api/artworks
  * Requiert authentification
