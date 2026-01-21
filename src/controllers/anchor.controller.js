@@ -180,6 +180,67 @@ class AnchorController {
       });
     }
   }
+
+  /**
+   * Récupère les anchors dans une bounding box
+   */
+  async getByBounds(req, res) {
+    try {
+      const { minLat, maxLat, minLng, maxLng } = req.query;
+
+      // Valider que tous les paramètres sont présents
+      if (minLat === undefined || maxLat === undefined || minLng === undefined || maxLng === undefined) {
+        return res.status(400).json({
+          success: false,
+          error: "Les paramètres minLat, maxLat, minLng et maxLng sont requis",
+        });
+      }
+
+      // Parser les valeurs
+      const parsedMinLat = parseFloat(minLat);
+      const parsedMaxLat = parseFloat(maxLat);
+      const parsedMinLng = parseFloat(minLng);
+      const parsedMaxLng = parseFloat(maxLng);
+
+      // Valider que ce sont des nombres
+      if (isNaN(parsedMinLat) || isNaN(parsedMaxLat) || isNaN(parsedMinLng) || isNaN(parsedMaxLng)) {
+        return res.status(400).json({
+          success: false,
+          error: "Les paramètres doivent être des nombres valides",
+        });
+      }
+
+      // Valider les plages de valeurs
+      if (parsedMinLat < -90 || parsedMinLat > 90 || parsedMaxLat < -90 || parsedMaxLat > 90) {
+        return res.status(400).json({
+          success: false,
+          error: "Les latitudes doivent être entre -90 et 90",
+        });
+      }
+
+      if (parsedMinLng < -180 || parsedMinLng > 180 || parsedMaxLng < -180 || parsedMaxLng > 180) {
+        return res.status(400).json({
+          success: false,
+          error: "Les longitudes doivent être entre -180 et 180",
+        });
+      }
+
+      const anchors = await anchorService.getByBounds(parsedMinLat, parsedMaxLat, parsedMinLng, parsedMaxLng);
+
+      return res.status(200).json({
+        success: true,
+        data: anchors,
+        count: anchors.length,
+      });
+    } catch (error) {
+      console.error("Erreur dans getByBounds:", error);
+
+      return res.status(500).json({
+        success: false,
+        error: "Erreur lors de la récupération des anchors",
+      });
+    }
+  }
 }
 
 export default new AnchorController();

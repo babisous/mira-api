@@ -46,4 +46,6 @@ model Anchor {
 
   // Relations
   artwork Artwork @relation(fields: [artworkId], references: [id])
+
+  @@index([latitude, longitude])
 }

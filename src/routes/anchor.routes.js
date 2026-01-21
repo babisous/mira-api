@@ -12,6 +12,14 @@ const router = express.Router();
 router.get("/", (req, res) => anchorController.getAll(req, res));
 
 /**
+ * @route   GET /api/anchors/bounds
+ * @desc    Récupère les anchors dans une bounding box
+ * @access  Public
+ * @query   minLat, maxLat, minLng, maxLng
+ */
+router.get("/bounds", (req, res) => anchorController.getByBounds(req, res));
+
+/**
  * @route   POST /api/anchors/:artworkId
  * @desc    Crée ou met à jour l'anchor d'une œuvre
  * @access  Private

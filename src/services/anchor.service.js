@@ -137,6 +137,41 @@ class AnchorService {
 
     return anchors;
   }
+
+  /**
+   * Récupère les anchors dans une bounding box
+   * @param {number} minLat - Latitude minimum
+   * @param {number} maxLat - Latitude maximum
+   * @param {number} minLng - Longitude minimum
+   * @param {number} maxLng - Longitude maximum
+   * @returns {Promise<object[]>}
+   */
+  async getByBounds(minLat, maxLat, minLng, maxLng) {
+    const anchors = await prisma.anchor.findMany({
+      where: {
+        latitude: { gte: minLat, lte: maxLat },
+        longitude: { gte: minLng, lte: maxLng },
+      },
+      include: {
+        artwork: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return anchors;
+  }
 }
 
 export default new AnchorService();
